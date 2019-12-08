@@ -73,31 +73,48 @@ app.post(
       return res.status(422).json({ errors: errors.array() });
     }
 
+    // If file is not provided
     if (!req.file) {
       res.json({ err: "File is required" });
     } else {
-      const { name, email, dob, gender, password } = req.body;
+      // Extracting all details from form
+      const { name, email, dob, gender, password2 } = req.body;
 
-      User.create({
+      // Creating new user object
+      const newUser = new User({
         name,
         email,
         dob,
         gender,
-        password,
+        password: password2,
         profileImage: `uploads/${req.file.filename}`
-      })
-        .then(user => {
-          res.status(201).json(user);
-        })
-        .catch(() =>
-          res.status(500).json({
-            err: "User was not created try again"
-          })
-        );
+      });
+
+      // Hashing the password
+      // Method to generate salt
+      bcrypt.genSalt(10, (err, salt) => {
+        if (err) throw err;
+        // Hashing the password using salt
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then(user => {
+              res.status(201).json(user);
+            })
+            .catch(() =>
+              res.status(500).json({
+                err: "User was not created try again"
+              })
+            );
+        });
+      });
     }
   }
 );
 
+// Login route
 app.post("/login", loginValidation, (req, res) => {
   // Getting validation results
   const errors = validationResult(req);
@@ -106,6 +123,25 @@ app.post("/login", loginValidation, (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
+
+  const { email, password } = req.body;
+  User.findOne({ email }).then(user => {
+    bcrypt.compare(password, user.password).then(isMatch => {
+      if (isMatch) {
+        res.json("Logged in successfully");
+      } else {
+        let err = {
+          errors: [
+            {
+              param: "password",
+              msg: "Incorrect Password"
+            }
+          ]
+        };
+        res.status(400).json(err);
+      }
+    });
+  });
 });
 
 const port = process.env.PORT || 3001;

@@ -1,0 +1,32 @@
+<connection active="true"
+		handler="com.opentext.sap.damint.service.HybNewVersionEventHandler"
+		id="Hyb_NewVers">
+		<events>10001</events>
+		</connection>
+put below config inside notificationconfigs tag
+<!-- Config for new automatic update scenario starts -->
+		<notificationconfig connectionid="Hyb_NewVers"
+		damfieldid="HYBRIS.TABLE.PRODUCT.PRODUCT INFO"
+		id="HybNewVers-1" istabular="true">
+		<filterfields>
+		<filterfield id="id1" ismandatory="true" name="Hybris Item PK">
+		<operators>
+		<operator id="MP" name="matches pattern"></operator>
+		</operators>
+<!-- the value must be NOT empty (it should contain at least one char.) -->
+		<value>.+</value>
+		</filterfield>
+		</filterfields>
+		<datafields>
+		<datafield damid="HYBRIS.FIELD.PRODUCT.PRODUCT PK" datatype="string" id="id5" name="Hybris Item PK"></datafield>
+		</datafields>
+		</notificationconfig>
+
+		
+		<notificationconfig connectionid="Hyb_NewVers" damfieldid="HYBRIS.TABLE.PRODUCT.PRODUCT INFO" id="HybNewVers-2" istabular="true">
+<datafields>
+<datafield damid="AUTO.TABULAR.ASSIGNED" datatype="integer" id="id1" name="Assigned"></datafield>
+<!--<datafield damid="HYBRIS.PRODUCT.LOOKUP.IS_ASSIGNED" datatype="integer" id="id1" name="Assigned"></datafield>-->
+</datafields>
+</notificationconfig>
+		<!-- Config for new automatic update scenario ends →

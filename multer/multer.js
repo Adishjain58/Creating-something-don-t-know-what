@@ -1,5 +1,6 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 
 //Set Storage Engine
 const storage = multer.diskStorage({
@@ -36,4 +37,8 @@ const upload = multer({
   }
 }).single("myImage");
 
-module.exports = upload;
+const deleteFile = imagePath => {
+  fs.unlinkSync(imagePath);
+};
+
+module.exports = { upload, deleteFile };

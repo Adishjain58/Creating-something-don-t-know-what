@@ -37,9 +37,10 @@ const registerValidation = [
     .withMessage("Date of birth is required")
     .bail()
     .isBefore(cA)
-    .withMessage("Inavlid date")
+    .withMessage("Age should be greater than 18")
+    .bail()
     .isAfter(cB)
-    .withMessage("Inavlid date"),
+    .withMessage("Age should be less than 65"),
   check("password")
     .exists({ checkNull: true, checkFalsy: true })
     .bail()
@@ -61,7 +62,17 @@ const registerValidation = [
     }),
   check("gender")
     .exists({ checkNull: true, checkFalsy: true })
-    .withMessage("Gender is required")
+    .withMessage("Gender is required"),
+  check("number")
+    .exists({ checkNull: true, checkFalsy: true })
+    .withMessage("Mobile number  is required")
+    .bail()
+    .isNumeric()
+    .withMessage("Only numeric digits are allowed")
+    .bail()
+    .matches(/[0-9]{10}/)
+    .withMessage("Mobile number should contain exactly 10 digits")
+
   // .isAlpha()
   // .withMessage("Gender must contain only alphabetical characters")
 ];
